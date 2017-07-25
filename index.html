@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Question Block</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Score: <span class="score">0</span></h2>
+
+<div class="container">
+  <div class="block">
+    <div class="front"><span>?</span></div>
+    <div class="back"><span></span></div>
+    <div class="right"><span>?</span></div>
+    <div class="left"><span>?</span></div>
+    <div class="top"><span></span></div>
+    <div class="bottom"><span></span></div>
+  </div>
+  <div class="coin"></div>
+  <div class="oneup">
+    <div class="cap">
+      <div class="spot"></div>
+    </div>
+    <div class="face">
+      <div class="eye"></div>
+      <div class="eye right"></div>
+    </div>
+  </div>
+</div>
+
+<audio id="coin" src="http://katherinekato.com/misc/coin.wav"></audio>
+<audio id="oneup" src="http://katherinekato.com/misc/1-up.wav"></audio>
+
+<script>
+const block = document.querySelector('.block');
+const coin = document.querySelector('.coin');
+const oneup = document.querySelector('.oneup');
+const audio = document.querySelector('audio#coin');
+const scoreBoard = document.querySelector('.score');
+let score = 0;
+
+function playSound() {
+  if (!audio) return;
+  audio.currentTime = 0;
+  audio.play();
+  coin.classList.add('active');
+  block.classList.add('bounce');
+}
+
+function removeBounce(e) {
+  if(e.animationName !== 'blockbounce') return;
+  this.classList.remove('bounce');
+}
+
+function removeActive(e) {
+  if(e.animationName !== 'coinmove') return;
+  this.classList.remove('active');
+}
+
+function removeOneUpActive(e) {
+  if(e.animationName !== 'oneupmove') return;
+  this.classList.remove('oneup-active');
+}
+
+function hit(e) {
+  if(!e.isTrusted) return;
+  score++;
+  scoreBoard.textContent = score;
+}
+
+function playSoundOneUp() {
+  if(score == 100) {
+    const audioOneUp = document.querySelector('audio#oneup');
+    audio.pause();
+    audioOneUp.currentTime = 0;
+    audioOneUp.play();
+    coin.classList.remove('active');
+    block.classList.add('bounce');
+    oneup.classList.add('oneup-active');
+    score = 0;
+    scoreBoard.textContent = 0;
+  }
+}
+
+block.addEventListener('webkitAnimationEnd', removeBounce);
+block.addEventListener('animationend', removeBounce);
+
+coin.addEventListener('webkitAnimationEnd', removeActive);
+coin.addEventListener('animationend', removeActive);
+oneup.addEventListener('webkitAnimationEnd', removeOneUpActive);
+oneup.addEventListener('animationend', removeOneUpActive);
+
+block.addEventListener('click', hit);
+block.addEventListener('click', playSound);
+block.addEventListener('click', playSoundOneUp);
+</script>
+
+</body>
+</html>
